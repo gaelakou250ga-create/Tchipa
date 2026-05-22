@@ -1,1 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tchipa.com</title>
 
+<style>
+body{font-family:Arial;margin:0;background:#f4f4f4}
+header{background:#000;color:#fff;padding:15px;text-align:center}
+h1{color:orange;margin:0}
+.container{padding:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
+.card{background:#fff;padding:10px;border-radius:10px;text-align:center}
+img{width:100%;border-radius:10px}
+button{padding:10px;border:none;border-radius:8px;cursor:pointer}
+.buy{background:black;color:white;margin-top:5px}
+.cart{position:fixed;top:10px;right:10px;background:orange;padding:10px;border-radius:10px;cursor:pointer}
+.panel{display:none;background:#fff;padding:10px;margin-top:20px}
+input{padding:8px;width:90%;margin:5px}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>TCHIPA.COM</h1>
+<p>Mini e-commerce Côte d'Ivoire</p>
+</header>
+
+<div class="cart" onclick="voirPanier()">
+🛒 Panier (<span id="count">0</span>)
+</div>
+
+<div class="container">
+
+<h2>Produits</h2>
+<div class="grid" id="products"></div>
+
+<!-- ADMIN -->
+<div class="panel" id="admin">
+<h3>Admin - Ajouter produit</h3>
+<input id="name" placeholder="Nom produit">
+<input id="price" placeholder="Prix">
+<input id="img" placeholder="Image URL">
+<button onclick="addProduct()">Ajouter</button>
+</div>
+
+<button onclick="toggleAdmin()">Mode Admin</button>
+
+</div>
+
+<script>
+
+let products = JSON.parse(localStorage.getItem("products")) || [
+{ name:"Chaussures", price:"25000", img:"https://images.unsplash.com/photo-1542291026-7eec264c27ff" },
+{ name:"Montre", price:"18000", img:"https://images.unsplash.com/photo-1523170335258-f5ed11844a49" }
+];
+
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+function render(){
+let html="";
+products.forEach((p,i)=>{
+html+=`
+<div class="card">
+<img src="${p.img}">
+<h3>${p.name}</h3>
+<p>${p.price} FCFA</p>
+<button class="buy" onclick="addCart(${i})">Ajouter</button>
+</div>`;
+});
+document.getElementById("products").innerHTML=html;
+document.getElementById("count").innerText=cart.length;
+}
+
+function addCart(i){
+cart.push(products[i]);
+localStorage.setItem("cart",JSON.stringify(cart));
+render();
+}
+
+function voirPanier(){
+let total=0;
+cart.forEach(p=>total+=parseInt(p.price));
+alert("Produits: "+cart.length+" | Total: "+total+" FCFA");
+}
+
+function toggleAdmin(){
+let p=document.getElementById("admin");
+p.style.display=p.style.display==="block"?"none":"block";
+}
+
+function addProduct(){
+let n=document.getElementById("name").value;
+let pr=document.getElementById("price").value;
+let im=document.getElementById("img").value;
+
+products.push({name:n,price:pr,img:im});
+localStorage.setItem("products",JSON.stringify(products));
+render();
+}
+
+render();
+</script>
+
+</body>
+</html>
